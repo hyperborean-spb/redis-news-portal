@@ -1,0 +1,49 @@
+spring:
+  application:
+    name: redis-news-portal
+  datasource:
+    url: jdbc:postgresql://localhost:5432/postgres?currentSchema=news-portal
+    username: postgres
+    password: andreymstepanov
+    jpa:
+      database-platform: org.hibernate.dialect.PostgreSQLDialect
+      show-sql: false
+      generate-ddl: true
+      defer-datasource-initialization: false
+      properties:
+        javax:
+          persistence:
+            schema-generation:
+              database:
+                action: none
+        hibernate:
+          ddl-auto: create-drop
+          hbm2dll:
+            create_namespaces: true
+          show_sql: false
+          format_sql: true
+          connection:
+            autocommit: false
+          current_session_context_class: org.springframework.orm.hibernate5.SpringSessionContext
+          temp:
+            use_jdbc_metadata_defaults: false
+
+#  datasource:
+#    initialization-mode: always --что значит. к каким базам относится
+#    url: jdbc:h2:mem:musala
+#    driver-class-name: org.h2.Driver --зачем. к каким базам относится
+#    username: admin
+#    password: password
+#  h2:
+#    console:
+#      enabled: true
+
+  liquibase:
+    enabled: false
+    change-log: classpath:/db/changelog/db.changelog-master.yml
+    database-change-log-lock-table: drones_databasechangeloglock
+    database-change-log-table: drones_databasechangelog
+
+logging:
+  file:
+    name: logs/redis-news-portal.log
