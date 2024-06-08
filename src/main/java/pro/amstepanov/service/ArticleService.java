@@ -1,11 +1,8 @@
 package pro.amstepanov.service;
 
-import pro.amstepanov.domain.Article;
+import pro.amstepanov.dto.ArticleDto;
 
 public interface ArticleService {
 
-	Article getArticleById(Long  id);
-//	Client getClientByPhone(String phone);
-
-//	Client  getClientByMail(String mail);
+	ArticleDto getArticleById(Long  id);
 }

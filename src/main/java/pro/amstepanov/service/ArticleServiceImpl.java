@@ -2,11 +2,12 @@ package pro.amstepanov.service;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
-import pro.amstepanov.domain.Article;
+import pro.amstepanov.domain.Comment;
+import pro.amstepanov.dto.ArticleDto;
 import pro.amstepanov.exception.ArticleNotFoundException;
 import pro.amstepanov.repository.ArticleRepository;
+import pro.amstepanov.repository.CommentRepository;
 
 import javax.transaction.Transactional;
 
@@ -16,11 +17,18 @@ import javax.transaction.Transactional;
 public class ArticleServiceImpl implements ArticleService {
 
 	private final ArticleRepository articleRepository;
+	private final CommentRepository commentRepository;
 	//private final ModelMapper modelMapper;
 
 	@Transactional
 	@Override
-	public Article getArticleById(Long id){
-		return articleRepository.findById(id).orElseThrow(() ->new ArticleNotFoundException("статья с указанным индексом не найдена"));
+	public ArticleDto getArticleById(Long id){
+		return articleRepository.findById(id)
+		.map(article -> new ArticleDto(
+			article.getId(),
+			article.getContent(),
+			commentRepository.findByArticle(article).stream().mapToInt(Comment::getRating).average().orElse(0)
+		))
+		.orElseThrow(() ->new ArticleNotFoundException("статья с указанным индексом не найдена"));
 	}
 }

@@ -6,7 +6,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
-import pro.amstepanov.domain.Article;
+import pro.amstepanov.dto.ArticleDto;
 import pro.amstepanov.service.ArticleService;
 
 import javax.validation.Valid;
@@ -20,7 +20,7 @@ public class ArticleController {
 	private final ArticleService articleService;
 
 	@GetMapping("/getbyid/{id}")
-	public ResponseEntity<Article> getArticleById(@PathVariable Long id) {
+	public ResponseEntity<ArticleDto> getArticleById(@PathVariable Long id) {
 		return ResponseEntity.ok().body(articleService.getArticleById(id));
 	}
 /*
