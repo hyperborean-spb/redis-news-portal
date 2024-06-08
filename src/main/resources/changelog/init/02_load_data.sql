@@ -1,0 +1,2 @@
+INSERT INTO article (id, content) VALUES(nextval('ARTICLE_CUSTOM_SEQ'), 'О засилье дураков в органах власти');
+INSERT INTO comment (id, article_id, content, rating) VALUES(nextval('COMMENT_CUSTOM_SEQ'), currval('ARTICLE_CUSTOM_SEQ'), 'Блестяще', 5);

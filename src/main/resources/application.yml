@@ -7,20 +7,23 @@ spring:
     password: andreymstepanov
     jpa:
       database-platform: org.hibernate.dialect.PostgreSQLDialect
-      show-sql: false
+      show-sql: true
       generate-ddl: true
+      #spring.jpa.generate-ddl - это vendor-INdependent аналог spring.jpa.hibernate.ddl-auto
       defer-datasource-initialization: false
-      properties:
-        javax:
+#      properties:
+      javax:
           persistence:
             schema-generation:
               database:
                 action: none
-        hibernate:
+      hibernate:
           ddl-auto: create-drop
-          hbm2dll:
-            create_namespaces: true
-          show_sql: false
+#          hbm2dll:
+#            create_namespaces: true
+            #spring.jpa.hibernate.ddl-auto is actually a Spring Boot shortcut for the "hibernate.hbm2ddl.auto" property.
+            #Defaults to "create-drop" when using an embedded database and no schema manager was detected. Otherwise, defaults to "none"
+          show_sql: true
           format_sql: true
           connection:
             autocommit: false
@@ -28,21 +31,17 @@ spring:
           temp:
             use_jdbc_metadata_defaults: false
 
+
+#spring.datasource.initialization-mode (S B 2) и spring.sql.init.mode ( SB 3) в значении always аналогичны higher-level Database Migration Tool, like Flyway or Liquibase
+# т.е. формируют структуру базы при старте приложения из скриптов schema.sql  и data.sql
 #  datasource:
-#    initialization-mode: always --что значит. к каким базам относится
-#    url: jdbc:h2:mem:musala
-#    driver-class-name: org.h2.Driver --зачем. к каким базам относится
-#    username: admin
-#    password: password
-#  h2:
-#    console:
-#      enabled: true
+#    initialization-mode: always
 
   liquibase:
-    enabled: false
-    change-log: classpath:/db/changelog/db.changelog-master.yml
-    database-change-log-lock-table: drones_databasechangeloglock
-    database-change-log-table: drones_databasechangelog
+    enabled: true
+    change-log: classpath:/changelog/db.changelog-master.yml
+    database-change-log-lock-table: news_portal_databasechangeloglock
+    database-change-log-table: news_portal_databasechangelog
 
 logging:
   file:
