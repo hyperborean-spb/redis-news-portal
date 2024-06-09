@@ -21,7 +21,7 @@ public class ArticleController {
 
 	@GetMapping("/getbyid/{id}")
 	public ResponseEntity<ArticleDto> getArticleById(@PathVariable Long id) {
-		return ResponseEntity.ok().body(articleService.getArticleById(id));
+		return ResponseEntity.ok().body(articleService.getCachedArticleById(id));
 	}
 /*
 	@GetMapping("/getbyname")
