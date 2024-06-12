@@ -4,9 +4,11 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.hibernate.type.SerializationException;
+import org.modelmapper.Converter;
 import org.modelmapper.ModelMapper;
+import org.modelmapper.PropertyMap;
 import org.springframework.stereotype.Service;
+import pro.amstepanov.domain.Article;
 import pro.amstepanov.domain.Comment;
 import pro.amstepanov.dto.ArticleDto;
 import pro.amstepanov.exception.ArticleNotFoundException;
@@ -23,20 +25,29 @@ public class ArticleServiceImpl implements ArticleService {
 
 	private final ArticleRepository articleRepository;
 	private final CommentRepository commentRepository;
-	private final ModelMapper dtoMapper;
+	private  final ModelMapper modelMapper;
 	private final ObjectMapper jsonMapper;;
 
 	JedisPool pool = new JedisPool("localhost", 6379);
 
 
-	@Override
-	public ArticleDto getArticleById(Long id){
+	public ArticleDto getArticleByIdSimpleWay(Long id){
 		return articleRepository.findById(id)
 		.map(article -> new ArticleDto(
 			article.getId(),
 			article.getContent(),
 			commentRepository.findByArticle(article).stream().mapToInt(Comment::getRating).average().orElse(0)
 		))
+		.orElseThrow(() ->new ArticleNotFoundException("article not found"));
+	}
+
+	@Override
+	public ArticleDto getArticleById(Long id){
+		return articleRepository.findById(id)
+		.map(article -> {
+			modelMapper.createTypeMap(Article.class,  ArticleDto.class).setConverter(converter);
+			return modelMapper.map(article, ArticleDto.class);
+		})
 		.orElseThrow(() ->new ArticleNotFoundException("article not found"));
 	}
 
@@ -61,11 +72,27 @@ public class ArticleServiceImpl implements ArticleService {
 		}
 	}
 
-	/*not appropriate as there is no  Source getter
-	private void  convertToDto(){
-		TypeMap<Article, ArticleDto> propertyMapper = this.mapper.createTypeMap(Article.class, ArticleDto.class);
-		propertyMapper.addMapping(
-			Article::get..., ArticleDto::setAverageScore)
-		);
-	}*/
+	private Double returnAverageScore(Article article){
+		return commentRepository.findByArticle(article).stream().mapToInt(Comment::getRating).average().orElse(0);
+	}
+
+	Converter<Article, ArticleDto> converter = context -> {
+		ArticleDto dto = new ArticleDto();
+		Article article = context.getSource();
+		dto.setAverageScore(returnAverageScore(article));
+		dto.setId(article.getId());
+		dto.setContent(article.getContent());
+		return dto;
+	};
+
+	private PropertyMap<Article, ArticleDto>  dtoPropertyMap = new PropertyMap<Article, ArticleDto>() {
+		@Override
+		protected void configure() {
+			/*you cannot execute complex custom logic directly within PropertyMap.configure(), but you can invoke methods that do.
+			if you want to add complex custom logic, you could use a Converter, but never use a PropertyMap
+			* https://stackoverflow.com/questions/44739738/modelmapper-ensure-that-method-has-zero-parameters-and-does-not-return-void
+			map().setAverageScore(commentRepository.findByArticle(source).stream().mapToInt(Comment::getRating).average().orElse(0));
+			*/
+		}
+	};
 }

@@ -8,9 +8,6 @@ import org.modelmapper.convention.MatchingStrategies;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Bean;
-import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
-
-import java.util.concurrent.Executor;
 
 import static org.modelmapper.config.Configuration.AccessLevel.PRIVATE;
 
@@ -23,23 +20,11 @@ public class RedisInfoApplication{
 		SpringApplication.run(RedisInfoApplication.class, args);
 	}
 
-	/* пул для @Async; + @EnableAsync in config */
-	@Bean
-	public Executor taskExecutor() {
-		ThreadPoolTaskExecutor executor = new ThreadPoolTaskExecutor();
-		executor.setCorePoolSize(2);
-		executor.setMaxPoolSize(2);
-		executor.setQueueCapacity(500);
-		executor.setThreadNamePrefix("BKS-");
-		executor.initialize();
-		return executor;
-	}
-
 	@Bean
 	public ModelMapper modelMapper() {
 		ModelMapper mapper = new ModelMapper();
 		mapper.getConfiguration()
-		.setMatchingStrategy(MatchingStrategies.STRICT)
+		.setMatchingStrategy(MatchingStrategies.LOOSE)
 		.setFieldMatchingEnabled(true)
 		.setSkipNullEnabled(true)
 		.setFieldAccessLevel(PRIVATE);

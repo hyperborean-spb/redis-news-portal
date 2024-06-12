@@ -23,26 +23,4 @@ public class ArticleController {
 	public ResponseEntity<ArticleDto> getArticleById(@PathVariable Long id) {
 		return ResponseEntity.ok().body(articleService.getCachedArticleById(id));
 	}
-/*
-	@GetMapping("/getbyname")
-	@Operation(summary = "Поиск по имени")
-	@SecurityRequirement(name = "JWT")
-	public ResponseEntity<Page<Client>> getClientByName(@RequestParam int page, @RequestParam int size, @RequestParam  String name) {
-		return ResponseEntity.ok().body(articleService.getClientsByName(page,  size,  name));
-	}
-
-
-	@PostMapping("/registerclient")
-	@Operation(summary = "Регистрация нового клиента")
-	@SecurityRequirement(name = "JWT")
-	public ResponseEntity<Client> registerClient(@RequestBody @Valid ClientDto clientDto) {
-		return new ResponseEntity<>(articleService.registerClient(clientDto), HttpStatus.CREATED);
-	}
-
-	@PutMapping("/moneytransfer")
-	@Operation(summary = "Трансфер средств между клиентами")
-	@SecurityRequirement(name = "JWT")
-	public ResponseEntity<Boolean> moneyTransfer(@RequestParam long sourceId, @RequestParam long recipientId, @RequestParam  float amount) {
-		return ResponseEntity.ok(articleService.moneyTransfer(sourceId, recipientId, amount));
-	}*/
 }
